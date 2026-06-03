@@ -12,10 +12,11 @@ export async function POST(req: NextRequest) {
   await connectDB()
 
   const roomName = `culto-${cultoId}`
-  const cameraId = `camera-${Date.now()}`
+  // Identidade única por câmera para múltiplos dispositivos em simultâneo
+  const cameraId = `camera-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
   const token = await createCameraToken(roomName, cameraId)
 
   await Culto.findByIdAndUpdate(cultoId, { status: 'ao_vivo', livekit_room: roomName })
 
-  return NextResponse.json({ token, roomName, livekitUrl: process.env.LIVEKIT_URL })
+  return NextResponse.json({ token, cameraId, roomName, livekitUrl: process.env.LIVEKIT_URL })
 }

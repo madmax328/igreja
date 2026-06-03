@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { createCameraToken } from '@/lib/livekit'
+import { createDirectorToken } from '@/lib/livekit'
 import { connectDB } from '@/lib/mongodb'
 import Culto from '@/models/Culto'
 
@@ -11,11 +11,11 @@ export async function POST(req: NextRequest) {
   const { cultoId } = await req.json()
   await connectDB()
 
-  const roomName = `culto-${cultoId}`
-  const cameraId = `camera-${Date.now()}`
-  const token = await createCameraToken(roomName, cameraId)
+  const culto = await Culto.findById(cultoId)
+  if (!culto) return NextResponse.json({ error: 'Culto não encontrado' }, { status: 404 })
 
-  await Culto.findByIdAndUpdate(cultoId, { status: 'ao_vivo', livekit_room: roomName })
+  const roomName = culto.livekit_room || `culto-${cultoId}`
+  const token = await createDirectorToken(roomName)
 
   return NextResponse.json({ token, roomName, livekitUrl: process.env.LIVEKIT_URL })
 }
