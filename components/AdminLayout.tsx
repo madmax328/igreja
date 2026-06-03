@@ -12,6 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/live', label: 'Live', icon: '⬤' },
     { href: '/admin/cultos', label: 'Cultos', icon: '☩' },
     { href: '/admin/cortes', label: 'Cortes', icon: '✂' },
+    { href: '/admin/perfil', label: 'Perfil', icon: '◎' },
   ]
 
   return (
